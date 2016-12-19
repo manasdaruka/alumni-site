@@ -4,12 +4,17 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 import datetime
 
+curr=datetime.datetime.now().year
+YEARS=[]
+for i in range(2000, curr+1):
+    dum=[(i, str(i))]
+    YEARS=YEARS+dum
+
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    # bio = models.TextField(max_length=500, blank=True)
-    # location = models.CharField(max_length=30, blank=True)
-    # birth_date = models.DateField(null=True, blank=True)
-    year = models.IntegerField(default=datetime.datetime.now().year, blank=True)
+    year = models.IntegerField(default=2016, blank=True, choices=YEARS)
+    fb_link = models.URLField(null=True)
+    ln_link = models.URLField(null=True)
 
 
 @receiver(post_save, sender=User)

@@ -10,4 +10,3 @@ I have made the accounts feature but still edit_profile needs to be added, some 
 - Goto https://localhost:8000
 - Register a new user.
 - Goto https://localhost:8000/admin and login with superuser credentials that you made above in terminal and check users to find the new entry.
-

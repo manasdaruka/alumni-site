@@ -9,9 +9,12 @@
 	<tr><td>Name:</td><td>{{user.get_full_name}}</td></tr>
 	<tr><td>Email:</td><td>{{user.email}}</td></tr>
     <tr><td>Year:</td><td>{{user.profile.year}}</td></tr>
+    <tr><td>Social links:</td>
+        <td><a href="{{user.profile.fb_link}}" target="_blank">Facebook</a></td>
+        <td><a href="{{user.profile.ln_link}}" target="_blank">Linkdin</a></td></tr>
 
 </table>
-{#<p><a href="{% url 'accounts:edit_profile' %}">Edit profile</a></p>#}
+<p><a href="{% url 'accounts:edit_profile' %}">Edit profile</a></p>
 {#<p><a href="{% url 'accounts:user_list' %}">List of all users</a></p>#}
 {#<p><a href="{% url 'accounts:change_password' %}">Change password</a></p>#}
 {% endblock %}

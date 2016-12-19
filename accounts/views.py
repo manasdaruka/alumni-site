@@ -3,8 +3,11 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
+from .models import Profile
 
 from django.conf import settings
+
+from accounts.forms import EditProfileForm, EditUserForm
 
 
 def base_response(request, body, title=None, h1=None):
@@ -24,8 +27,7 @@ def login_view(request):
             next_url = request.POST["next"]
         if next_url:
             context_dict["next"] = next_url
-        if "username" in request.POST and "password" in request.POST and request.POST["username"] and request.POST[
-            "password"]:
+        if "username" in request.POST and "password" in request.POST and request.POST["username"] and request.POST["password"]:
             username = request.POST["username"]
             password = request.POST["password"]
             context_dict["username"] = username
@@ -73,8 +75,12 @@ def register(request):
                 user.set_password(password1)
                 user.first_name = request.POST['firstname']
                 user.last_name = request.POST['lastname']
+                user.email = request.POST["email"]
                 user.save()
                 user = authenticate(username=username, password=password1)
+                user.profile.year = request.POST['year']
+                user.profile.fb_link = request.POST['fb']
+                user.profile.ln_link = request.POST['linkdin']
                 login(request, user)
                 return HttpResponseRedirect(settings.LOGIN_REDIRECT_URL)
         else:
@@ -90,13 +96,17 @@ def account_info(request):
 def edit_profile(request):
     context_dict = {}
     if request.method == "POST":
-        form = EditProfileForm(request.POST, instance=request.user)
-        if form.is_valid():
-            form.save()
+        form_basic = EditUserForm(request.POST, instance=request.user)
+        form_add = EditProfileForm(request.POST, instance=request.user.profile)
+        if form_basic.is_valid() and form_add.is_valid():
+            form_basic.save()
+            form_add.save()
             context_dict["ep_success"] = "Profile changed successsfully"
         else:
             context_dict["ep_error"] = "Invalid data received"
     else:
-        form = EditProfileForm(instance=request.user)
-    context_dict["form"] = form
+        form_basic = EditUserForm(instance=request.user)
+        form_add = EditProfileForm(instance=request.user.profile)
+    context_dict["form_basic"] = form_basic
+    context_dict["form_add"] = form_add
     return render(request, "accounts/edit_profile.html", context_dict)
