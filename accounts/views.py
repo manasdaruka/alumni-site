@@ -4,10 +4,12 @@ from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from .models import Profile
+from django.db.models import Q
+
 
 from django.conf import settings
 
-from accounts.forms import EditProfileForm, EditUserForm
+from accounts.forms import EditProfileForm, EditUserForm, CreateProfileForm
 
 
 def base_response(request, body, title=None, h1=None):
@@ -68,7 +70,11 @@ def register(request):
             context_dict["username"] = username
             if password1 != password2:
                 context_dict["register_error"] = "Passwords do not match"
+                form_profile = CreateProfileForm()
+                context_dict["form"] = form_profile
             elif User.objects.filter(username=username).count() > 0:
+                form_profile = CreateProfileForm()
+                context_dict["form"] = form_profile
                 context_dict["register_error"] = "A user with this username already exists"
             else:
                 user = User(username=username)
@@ -78,13 +84,20 @@ def register(request):
                 user.email = request.POST["email"]
                 user.save()
                 user = authenticate(username=username, password=password1)
-                user.profile.year = request.POST['year']
-                user.profile.fb_link = request.POST['fb']
-                user.profile.ln_link = request.POST['linkdin']
+                print(user.profile.year)
+                form_profile = CreateProfileForm(request.POST, request.FILES, instance = user.profile)
+                if form_profile.is_valid():
+                    form_profile.user = user
+                    form_profile.save()
+                    print("checkinig location")
+                    print(user.profile.pro_img)
                 login(request, user)
                 return HttpResponseRedirect(settings.LOGIN_REDIRECT_URL)
         else:
             context_dict["register_error"] = "You must fill out all fields"
+    else :
+        form_profile = CreateProfileForm()
+        context_dict["form"] = form_profile
     return render(request, "accounts/register.html", context_dict)
 
 
@@ -97,7 +110,7 @@ def edit_profile(request):
     context_dict = {}
     if request.method == "POST":
         form_basic = EditUserForm(request.POST, instance=request.user)
-        form_add = EditProfileForm(request.POST, instance=request.user.profile)
+        form_add = EditProfileForm(request.POST, request.FILES, instance=request.user.profile)
         if form_basic.is_valid() and form_add.is_valid():
             form_basic.save()
             form_add.save()
@@ -110,3 +123,21 @@ def edit_profile(request):
     context_dict["form_basic"] = form_basic
     context_dict["form_add"] = form_add
     return render(request, "accounts/edit_profile.html", context_dict)
+
+
+def search(request):
+    context_dict = {}
+    if request.method == "POST":
+        if "query" in request.POST and request.POST["query"] != '':
+            query = request.POST["query"]
+            context_dict["query"] = query
+            qur = Q(username__icontains = query)|Q(profile__year__icontains = query)|Q(first_name__icontains = query)|Q(last_name__icontains = query)
+            context_dict["result"] = User.objects.filter(Q(is_superuser = False),qur)
+            print (context_dict["result"])
+            if len(context_dict["result"]) == 0:
+                context_dict["empty"] = "No matching user found for "
+            print("hi")
+            return render(request,"accounts/search_result.html", context_dict)
+        else:
+            context_dict["error"] = "You must enter a valid search query"
+    return render(request, "accounts/search_result.html", context_dict)

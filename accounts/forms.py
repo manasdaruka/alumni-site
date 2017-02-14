@@ -17,9 +17,13 @@ class EditUserForm(forms.ModelForm):
         fields = ("first_name", "last_name", "email")
 
 class EditProfileForm(forms.ModelForm):
-    year = forms.ChoiceField(choices=YEARS, required=True)
-    fb_link = forms.URLField(required=True)
-    ln_link = forms.URLField(required=True)
     class Meta:
-        model =Profile
-        fields = ("year", "fb_link", "ln_link")
+        model = Profile
+        fields = ('year', 'fb_link', 'ln_link', 'curr_work', 'prev_work', 'pro_img' )
+
+class CreateProfileForm(forms.ModelForm):
+    # year = forms.ChoiceField(choices=YEARS, required=True)
+    class Meta:
+        model = Profile
+        fields = ('year', 'fb_link', 'ln_link', 'curr_work', 'prev_work', 'pro_img' )
+        

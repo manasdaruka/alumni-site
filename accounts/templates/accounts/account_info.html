@@ -1,4 +1,5 @@
 {% extends 'accounts/base.html' %}
+{% load static %}
 
 {% block title_block %}{{PROJECT_NAME}} - account{% endblock %}
 {% block h1_block %}My Account{% endblock %}
@@ -9,6 +10,9 @@
 	<tr><td>Name:</td><td>{{user.get_full_name}}</td></tr>
 	<tr><td>Email:</td><td>{{user.email}}</td></tr>
     <tr><td>Year:</td><td>{{user.profile.year}}</td></tr>
+    <tr><td>Current work:</td><td>{{user.profile.curr_work}}</td></tr>
+    <tr><td>Previous works:</td><td>{{user.profile.prev_work}}</td></tr>
+    <img src='../../{{user.profile.pro_img.url}}' width="100px" height="120px" alt={{user.profile.pro_img.url}}>
     <tr><td>Social links:</td>
         <td><a href="{{user.profile.fb_link}}" target="_blank">Facebook</a></td>
         <td><a href="{{user.profile.ln_link}}" target="_blank">Linkdin</a></td></tr>

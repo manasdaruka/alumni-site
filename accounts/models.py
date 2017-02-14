@@ -15,6 +15,9 @@ class Profile(models.Model):
     year = models.IntegerField(default=2016, blank=True, choices=YEARS)
     fb_link = models.URLField(null=True)
     ln_link = models.URLField(null=True)
+    curr_work = models.CharField(max_length=100, blank = True)
+    prev_work = models.CharField(max_length=200, blank = True)
+    pro_img = models.ImageField(upload_to = 'images/')
 
 
 @receiver(post_save, sender=User)
