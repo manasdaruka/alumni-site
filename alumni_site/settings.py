@@ -126,7 +126,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
 
-
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '10.10.3.23']
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR,'staticfiles')
 EXTSTATIC_DIR = os.path.join(BASE_DIR,'extstatic')

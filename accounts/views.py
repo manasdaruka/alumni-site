@@ -2,7 +2,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from .models import Profile
 from django.db.models import Q
 
@@ -131,7 +131,7 @@ def search(request):
         if "query" in request.POST and request.POST["query"] != '':
             query = request.POST["query"]
             context_dict["query"] = query
-            qur = Q(username__icontains = query)|Q(profile__year__icontains = query)|Q(first_name__icontains = query)|Q(last_name__icontains = query)
+            qur = Q(username__icontains = query)|Q(profile__year__icontains = query)|Q(first_name__icontains = query)|Q(last_name__icontains = query)|Q(profile__curr_work__icontains = query)|Q(profile__prev_work__icontains = query)
             context_dict["result"] = User.objects.filter(Q(is_superuser = False),qur)
             print (context_dict["result"])
             if len(context_dict["result"]) == 0:
@@ -141,3 +141,8 @@ def search(request):
         else:
             context_dict["error"] = "You must enter a valid search query"
     return render(request, "accounts/search_result.html", context_dict)
+
+def public_profile(request,username):
+    puser = get_object_or_404(User,username=username)
+    context_dict = {"puser":puser}
+    return render(request,"accounts/public_profile.html",context_dict)
